@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "1030782991099",
+    "project_id": "the-yum-explorer",
+    "storage_bucket": "the-yum-explorer.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1030782991099:android:019426eb66cc968c934e5e",
+        "android_client_info": {
+          "package_name": "com.example.theyumexplorer"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1030782991099-fgdk5mcgauet6pks43uckdkmk66pn222.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.theyumexplorer",
+            "certificate_hash": "82dbaf3e8922bbfe3b91dbe1b1f52f2028908b68"
+          }
+        },
+        {
+          "client_id": "1030782991099-2dlbo5kkbcglu6o2h09sfro6gk48ou6r.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCjO1_AcsfWlRbIHlbdkjuUfEMM9_O6lP8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1030782991099-2dlbo5kkbcglu6o2h09sfro6gk48ou6r.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
