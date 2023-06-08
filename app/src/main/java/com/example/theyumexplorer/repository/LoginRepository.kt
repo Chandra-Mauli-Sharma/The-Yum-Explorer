@@ -1,9 +1,10 @@
 package com.example.theyumexplorer.repository
 
-import io.appwrite.models.Session
+import com.example.theyumexplorer.model.User
 
 
 interface LoginRepository {
-    suspend fun CreateAccount()
-    suspend fun LoginAnonymous(): Session
+    suspend fun LoginAnonymous(): User
+    suspend fun SigninGoogleAccount(idtoken: String): User
+    suspend fun SignInWithEmailAndPassword(email: String, password: String): User?
 }

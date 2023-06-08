@@ -2,9 +2,9 @@ package com.example.theyumexplorer.repository
 
 import android.net.Uri
 import androidx.work.ListenableWorker.Result
-import java.io.File
+import com.example.theyumexplorer.model.Content
 
 interface UploadContentRepository {
-    suspend fun UploadImage(image: File)
-    suspend fun UploadImageUri(uri: Uri):Result
+    suspend fun UploadContent(content: Content, currentImage: Uri)
+    suspend fun UploadImageUri(uri: Uri, contentId: String): Result
 }

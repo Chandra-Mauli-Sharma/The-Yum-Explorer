@@ -9,17 +9,21 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.theyumexplorer.util.readBool
-import com.example.theyumexplorer.view.ExplorerScreen
 import com.example.theyumexplorer.view.ContentCaptureScreen
+import com.example.theyumexplorer.view.ExplorerScreen
 import com.example.theyumexplorer.view.LoginScreen
 import com.example.theyumexplorer.view.MainScreen
 import com.example.theyumexplorer.view.ProfileScreen
+import com.example.theyumexplorer.view.SignupScreen
 import com.example.theyumexplorer.view.UploadContentScreen
 
 @Composable
-fun TheYumExplorerNavHost(modifier: Modifier, navHostController: NavHostController) {
+fun TheYumExplorerNavHost(
+    modifier: Modifier,
+    navHostController: NavHostController,
+    isLogged: Boolean
+) {
 
-    val isLogged by LocalContext.current.readBool("isLogged").collectAsState(initial = false)
     NavHost(
         navController = navHostController,
         startDestination = if (isLogged) TheYumExplorerScreen.MAIN_SCREEN.name else TheYumExplorerScreen.LOGIN_SCREEN.name,
@@ -45,6 +49,9 @@ fun TheYumExplorerNavHost(modifier: Modifier, navHostController: NavHostControll
                     it.arguments?.getString("contentType")!!,
                     navHostController
                 )
+            }
+            composable(TheYumExplorerScreen.SIGNUP_SCREEN.name) {
+                SignupScreen(modifier = modifier, navController = navHostController)
             }
         })
 }

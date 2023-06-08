@@ -140,12 +140,16 @@ fun ContentCaptureScreen(
                                 }
                                 IconButton(
                                     onClick = {
-                                        coroutine.launch(Dispatchers.IO) {
-                                            context.writeString(
-                                                "upload-image-uri",
-                                                currentCapturedImage.toString()
-                                            )
-                                        }
+//                                        coroutine.launch(Dispatchers.IO) {
+//                                            context.writeString(
+//                                                "upload-image-uri",
+//                                                currentCapturedImage.toString()
+//                                            )
+//                                        }
+                                        navController.previousBackStackEntry?.savedStateHandle?.set(
+                                            "upload-image-uri",
+                                            currentCapturedImage.toString()
+                                        )
                                         navController.popBackStack()
                                     },
                                     colors = IconButtonDefaults.filledIconButtonColors(

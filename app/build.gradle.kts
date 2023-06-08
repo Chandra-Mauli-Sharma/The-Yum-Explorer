@@ -4,6 +4,7 @@ plugins {
     alias(libs.plugins.kotlinAndroid)
     kotlin("kapt")
     alias(libs.plugins.hiltAndroid)
+    id("com.google.gms.google-services")
 }
 
 android {
@@ -64,6 +65,12 @@ dependencies {
     implementation(libs.material3)
     implementation(libs.firebase.components)
     implementation(libs.androidx.hilt.work)
+    implementation(libs.firebase.firestore.ktx)
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.firebase.auth.ktx)
+    implementation(libs.coil.compose)
+    implementation(libs.firebase.storage.ktx)
+    implementation(libs.play.services.auth)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.test.ext.junit)
     androidTestImplementation(libs.espresso.core)
@@ -74,6 +81,7 @@ dependencies {
     implementation(libs.sdk.appwrite.android)
     implementation(libs.hilt.android)
     kapt(libs.hilt.android.compiler)
+    kapt(libs.androidx.hilt.compiler)
     implementation(libs.androidx.material.icons.extended)
     implementation(libs.androidx.hilt.navigation.compose)
     implementation(libs.kotlinx.coroutines.android)

@@ -21,6 +21,7 @@ import com.example.theyumexplorer.navigation.TheYumExplorerNavHost
 import com.example.theyumexplorer.ui.theme.TheYumExplorerTheme
 import com.example.theyumexplorer.view.ExplorerScreen
 import com.example.theyumexplorer.view.LoginScreen
+import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.AndroidEntryPoint
 import io.appwrite.Client
 import io.appwrite.models.User
@@ -33,6 +34,9 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+    @Inject
+    lateinit var auth: FirebaseAuth
+
     @RequiresApi(Build.VERSION_CODES.Q)
     override fun onCreate(savedInstanceState: Bundle?) {
         mainActivity = this
@@ -45,7 +49,11 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                   TheYumExplorerNavHost(modifier = Modifier, navHostController = rememberNavController())
+                    TheYumExplorerNavHost(
+                        modifier = Modifier,
+                        navHostController = rememberNavController(),
+                        auth.currentUser != null
+                    )
                 }
             }
         }

@@ -18,11 +18,16 @@ class UploadWorker @AssistedInject constructor(
     @Assisted ctx: Context,
     @Assisted workerParameters: WorkerParameters,
     private val ioDispatcher: CoroutineDispatcher,
-    val repository: UploadContentRepository
 ) : CoroutineWorker(ctx, workerParameters) {
+    @Inject
+    lateinit var repository: UploadContentRepository
+
     override suspend fun doWork(): Result = withContext(ioDispatcher) {
         return@withContext try {
-            repository.UploadImageUri(Uri.parse(inputData.getString("upload-image")!!))
+            repository.UploadImageUri(
+                Uri.parse(inputData.getString("upload-image")!!),
+                inputData.getString("content-id")!!
+            )
         } catch (exception: Exception) {
             exception.printStackTrace()
             Result.failure()
