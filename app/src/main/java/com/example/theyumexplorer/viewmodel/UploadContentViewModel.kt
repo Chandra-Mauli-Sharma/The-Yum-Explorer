@@ -18,8 +18,8 @@ class UploadContentViewModel @Inject constructor(
 ) :
     ViewModel() {
 
-    private val _content: MutableStateFlow<Content?> = MutableStateFlow(null)
-    val content: StateFlow<Content?> = _content
+    private val _content: MutableStateFlow<Content> = MutableStateFlow(Content())
+    val content: StateFlow<Content> = _content
 
     fun onContentChanged(content: Content) {
         _content.value = content
@@ -28,7 +28,7 @@ class UploadContentViewModel @Inject constructor(
 
     fun uploadImage(currentImage: Uri) {
         viewModelScope.launch {
-            async { repository.UploadContent(content.value!!, currentImage) }.await()
+            async { repository.UploadContent(content.value, currentImage) }.await()
         }
     }
 }

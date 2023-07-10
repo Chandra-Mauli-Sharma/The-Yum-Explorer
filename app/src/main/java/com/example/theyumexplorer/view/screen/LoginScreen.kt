@@ -1,4 +1,4 @@
-package com.example.theyumexplorer.view
+package com.example.theyumexplorer.view.screen
 
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -64,7 +64,8 @@ fun LoginScreen(
             val task = GoogleSignIn.getSignedInAccountFromIntent(it.data)
             try {
                 val account = task.getResult(ApiException::class.java)
-                viewModel.CreateGoogleAccount(account.idToken!!)
+                runBlocking { viewModel.CreateGoogleAccount(account.idToken!!) }
+                navController.navigate(TheYumExplorerScreen.MAIN_SCREEN.name)
             } catch (e: ApiException) {
                 e.printStackTrace()
             }

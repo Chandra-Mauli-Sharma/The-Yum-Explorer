@@ -1,4 +1,4 @@
-package com.example.theyumexplorer.view
+package com.example.theyumexplorer.view.screen
 
 import android.graphics.BitmapFactory
 import android.net.Uri
@@ -21,7 +21,9 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.BrowseGallery
@@ -83,9 +85,7 @@ fun UploadContentScreen(
 ) {
     val contentType = remember {
         mutableStateMapOf(
-            TheYumContent.Video to true,
-            TheYumContent.Image to false,
-            TheYumContent.Blog to false
+            TheYumContent.Video to true, TheYumContent.Image to false, TheYumContent.Blog to false
         )
     }
     var fileChooser by remember {
@@ -94,10 +94,9 @@ fun UploadContentScreen(
 
     val content by viewModel.content.collectAsState()
 
-    val galleryLauncher =
-        rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) {
+    val galleryLauncher = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) {
 
-        }
+    }
 
     val context = LocalContext.current
     val coroutine = rememberCoroutineScope()
@@ -118,52 +117,50 @@ fun UploadContentScreen(
             showDeleteButton = false
         }
     })
-    if (fileChooser)
-        Dialog(onDismissRequest = { fileChooser = false }) {
-            Surface(
-                modifier
-                    .wrapContentHeight()
-                    .fillMaxWidth(), shape = MaterialTheme.shapes.large
+    if (fileChooser) Dialog(onDismissRequest = { fileChooser = false }) {
+        Surface(
+            modifier
+                .wrapContentHeight()
+                .fillMaxWidth(), shape = MaterialTheme.shapes.large
+        ) {
+            Row(
+                horizontalArrangement = Arrangement.SpaceEvenly,
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                Row(
-                    horizontalArrangement = Arrangement.SpaceEvenly,
-                    verticalAlignment = Alignment.CenterVertically
+                Card(
+                    onClick = {
+                        navController.navigate(
+                            "${TheYumExplorerScreen.IMAGE_CAPTURE_SCREEN.name}/${
+                                contentType.filterNot { !(it.value) }.toList().first().first
+                            }"
+                        )
+                    }, modifier = modifier.padding(10.dp)
                 ) {
-                    Card(
-                        onClick = {
-                            navController.navigate(
-                                "${TheYumExplorerScreen.IMAGE_CAPTURE_SCREEN.name}/${
-                                    contentType.filterNot { !(it.value) }.toList().first().first
-                                }"
-                            )
-                        },
-                        modifier = modifier.padding(10.dp)
+                    Column(
+                        verticalArrangement = Arrangement.Center,
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        modifier = modifier.padding(20.dp)
                     ) {
-                        Column(
-                            verticalArrangement = Arrangement.Center,
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                            modifier = modifier.padding(20.dp)
-                        ) {
-                            Icon(Icons.Default.Camera, contentDescription = null)
-                            Text(text = "Open Camera")
-                        }
+                        Icon(Icons.Default.Camera, contentDescription = null)
+                        Text(text = "Open Camera")
                     }
-                    Card(
-                        onClick = { galleryLauncher.launch("video/*") },
-                        modifier = modifier.padding(10.dp)
+                }
+                Card(
+                    onClick = { galleryLauncher.launch("video/*") },
+                    modifier = modifier.padding(10.dp)
+                ) {
+                    Column(
+                        verticalArrangement = Arrangement.Center,
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        modifier = modifier.padding(20.dp)
                     ) {
-                        Column(
-                            verticalArrangement = Arrangement.Center,
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                            modifier = modifier.padding(20.dp)
-                        ) {
-                            Icon(Icons.Default.BrowseGallery, contentDescription = null)
-                            Text(text = "Open Gallery")
-                        }
+                        Icon(Icons.Default.BrowseGallery, contentDescription = null)
+                        Text(text = "Open Gallery")
                     }
                 }
             }
         }
+    }
     Scaffold(topBar = {
         TopAppBar(title = {
             Text(
@@ -173,20 +170,20 @@ fun UploadContentScreen(
         }, navigationIcon = {
             IconButton(onClick = { navController.popBackStack() }) {
                 Icon(
-                    imageVector = Icons.Default.ArrowBack,
-                    contentDescription = null
+                    imageVector = Icons.Default.ArrowBack, contentDescription = null
                 )
             }
         }, actions = {
             TextButton(onClick = {
                 viewModel.uploadImage(Uri.parse(currentImage))
-            }, enabled = content?.title?.isNotBlank()!!) {
+            }, enabled = content.title.isNotBlank()) {
                 Text(text = "Upload")
             }
         })
     }) {
         Column(
             modifier = modifier
+                .verticalScroll(rememberScrollState())
                 .padding(it)
                 .padding(20.dp)
         ) {
@@ -196,89 +193,77 @@ fun UploadContentScreen(
             )
             Box(modifier = modifier.padding(5.dp))
             Row(
-                modifier = modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceEvenly
+                modifier = modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly
             ) {
                 contentType.forEach {
-                    FilterChip(
-                        selected = it.value,
-                        onClick = {
-                            contentType.forEach { contentMap ->
-                                contentType[contentMap.key] = contentMap.key == it.key
-                            }
-                        },
-                        label = { Text(text = it.key.name) },
-                        leadingIcon = {
-                            Icon(
-                                imageVector = when (it.key) {
-                                    TheYumContent.Video -> Icons.Default.VideoLibrary
-                                    TheYumContent.Image -> Icons.Default.Image
-                                    else -> Icons.Default.TextSnippet
-                                },
-                                contentDescription = null
-                            )
-                        })
+                    FilterChip(selected = it.value, onClick = {
+                        contentType.forEach { contentMap ->
+                            contentType[contentMap.key] = contentMap.key == it.key
+                        }
+                        viewModel.onContentChanged(content.copy(contentType = it.key))
+                    }, label = { Text(text = it.key.name) }, leadingIcon = {
+                        Icon(
+                            imageVector = when (it.key) {
+                                TheYumContent.Video -> Icons.Default.VideoLibrary
+                                TheYumContent.Image -> Icons.Default.Image
+                                else -> Icons.Default.TextSnippet
+                            }, contentDescription = null
+                        )
+                    })
                 }
 
             }
             Box(modifier = modifier.padding(5.dp))
             AnimatedVisibility(visible = contentType[TheYumContent.Video]?.or(contentType[TheYumContent.Image]!!)!!) {
                 Column {
-                    if (currentImage == null)
-                        Surface(
-                            border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
-                            shape = RoundedCornerShape(20.dp),
-                            modifier = modifier
-                                .fillMaxWidth()
-                                .padding(vertical = 10.dp)
-                                .fillMaxHeight(0.1f),
-                            onClick = {
-                                fileChooser = true
-                            }
-                        ) {
-                            Icon(
-                                imageVector = Icons.Default.Upload,
-                                contentDescription = null,
-                                modifier = modifier.padding(20.dp)
-                            )
+                    if (currentImage == null) Surface(border = BorderStroke(
+                        1.dp,
+                        MaterialTheme.colorScheme.outline
+                    ),
+                        shape = RoundedCornerShape(20.dp),
+                        modifier = modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 10.dp)
+                            .fillMaxHeight(0.1f),
+                        onClick = {
+                            fileChooser = true
+                        }) {
+                        Icon(
+                            imageVector = Icons.Default.Upload,
+                            contentDescription = null,
+                            modifier = modifier.padding(20.dp)
+                        )
 
-                        }
-                    else
-                        Box(contentAlignment = Alignment.Center) {
-                            Image(
-                                bitmap = BitmapFactory.decodeFile(Uri.parse(currentImage).path)
-                                    .asImageBitmap(),
-                                contentDescription = null,
-                                modifier = modifier
-                                    .clip(RoundedCornerShape(20.dp))
-                                    .fillMaxWidth()
-                                    .clickable {
-                                        showDeleteButton = true
-                                    }
-                            )
-                            this@Column.AnimatedVisibility(
-                                visible = showDeleteButton,
-                                enter = fadeIn(),
-                                exit = fadeOut()
-                            ) {
-                                IconButton(
-                                    onClick = {
-                                        currentImage = null
-                                    },
-                                    colors = IconButtonDefaults.filledIconButtonColors(
-                                        containerColor = Color.White,
-                                        contentColor = contentColorFor(
-                                            backgroundColor = Color.White
-                                        )
-                                    ),
-                                ) {
-                                    Icon(
-                                        imageVector = Icons.Default.Remove,
-                                        contentDescription = null
+                    }
+                    else Box(contentAlignment = Alignment.Center) {
+                        Image(bitmap = BitmapFactory.decodeFile(Uri.parse(currentImage).path)
+                            .asImageBitmap(),
+                            contentDescription = null,
+                            modifier = modifier
+                                .clip(RoundedCornerShape(20.dp))
+                                .fillMaxWidth()
+                                .clickable {
+                                    showDeleteButton = true
+                                })
+                        this@Column.AnimatedVisibility(
+                            visible = showDeleteButton, enter = fadeIn(), exit = fadeOut()
+                        ) {
+                            IconButton(
+                                onClick = {
+                                    currentImage = null
+                                },
+                                colors = IconButtonDefaults.filledIconButtonColors(
+                                    containerColor = Color.White, contentColor = contentColorFor(
+                                        backgroundColor = Color.White
                                     )
-                                }
+                                ),
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.Remove, contentDescription = null
+                                )
                             }
                         }
+                    }
                     Spacer(modifier = modifier.height(5.dp))
                     Text(
                         text = "Content Details",
@@ -286,20 +271,20 @@ fun UploadContentScreen(
                         modifier = modifier.padding(vertical = 5.dp)
                     )
                     OutlinedTextField(
-                        value = content?.title!!,
-                        onValueChange = { viewModel.onContentChanged(content!!.copy(title = it)) },
+                        value = content.title,
+                        onValueChange = { viewModel.onContentChanged(content.copy(title = it)) },
                         label = { Text(text = "Enter Title") },
                         placeholder = { Text(text = "Enter Title") },
                         modifier = modifier.fillMaxWidth()
                     )
                     OutlinedTextField(
-                        value = content?.description!!,
-                        onValueChange = { viewModel.onContentChanged(content!!.copy(description = it)) },
+                        value = content.description,
+                        onValueChange = { viewModel.onContentChanged(content.copy(description = it)) },
                         label = { Text(text = "Enter Description") },
                         placeholder = { Text(text = "Enter Description") },
-                        supportingText = { Text(text = "${content!!.description.length}/500") },
+                        supportingText = { Text(text = "${content.description.length}/500") },
                         minLines = 10,
-                        isError = content!!.description.length > 500,
+                        isError = content.description.length > 500,
                         modifier = modifier.fillMaxWidth()
                     )
                     Spacer(modifier = modifier.height(5.dp))
@@ -315,9 +300,9 @@ fun UploadContentScreen(
                         modifier = modifier.fillMaxWidth()
                     ) {
                         FilledIconToggleButton(
-                            checked = ContentLocationType.OUTSIDE == content!!.contentLocationType,
+                            checked = ContentLocationType.OUTSIDE == content.contentLocationType,
                             onCheckedChange = {
-                                viewModel.onContentChanged(content!!.copy(contentLocationType = ContentLocationType.OUTSIDE))
+                                viewModel.onContentChanged(content.copy(contentLocationType = ContentLocationType.OUTSIDE))
                             },
                             modifier = modifier.size(100.dp)
                         ) {
@@ -331,9 +316,9 @@ fun UploadContentScreen(
                             }
                         }
                         FilledIconToggleButton(
-                            checked = ContentLocationType.HOME == content!!.contentLocationType,
+                            checked = ContentLocationType.HOME == content.contentLocationType,
                             onCheckedChange = {
-                                viewModel.onContentChanged(content!!.copy(contentLocationType = ContentLocationType.HOME))
+                                viewModel.onContentChanged(content.copy(contentLocationType = ContentLocationType.HOME))
                             },
                             modifier = modifier.size(100.dp)
                         ) {

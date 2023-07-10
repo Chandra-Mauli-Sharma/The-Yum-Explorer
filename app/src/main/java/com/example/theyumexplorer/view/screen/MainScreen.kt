@@ -1,4 +1,4 @@
-package com.example.theyumexplorer.view
+package com.example.theyumexplorer.view.screen
 
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
@@ -8,7 +8,6 @@ import androidx.compose.material.icons.rounded.Map
 import androidx.compose.material.icons.rounded.MenuBook
 import androidx.compose.material.icons.rounded.Person3
 import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
@@ -19,9 +18,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import androidx.navigation.compose.NavHost
 import com.example.theyumexplorer.navigation.TheYumExplorerScreen
 
 @Composable
@@ -31,24 +28,18 @@ fun MainScreen(modifier: Modifier, navController: NavController) {
     }
     Scaffold(bottomBar = {
         NavigationBar {
-            NavigationBarItem(
-                selected = route == TheYumExplorerScreen.EXPLORER_SCREEN,
+            NavigationBarItem(selected = route == TheYumExplorerScreen.EXPLORER_SCREEN,
                 onClick = { route = TheYumExplorerScreen.EXPLORER_SCREEN },
                 icon = { Icon(Icons.Rounded.LocalFireDepartment, contentDescription = null) })
-            NavigationBarItem(
-                selected = false,
-                onClick = { /*TODO*/ },
+            NavigationBarItem(selected = route == TheYumExplorerScreen.RECIPE_SCREEN,
+                onClick = { route = TheYumExplorerScreen.RECIPE_SCREEN },
                 icon = { Icon(Icons.Rounded.MenuBook, contentDescription = null) })
-            NavigationBarItem(
-                selected = false,
-                onClick = { /*TODO*/ },
-                icon = {
-                    FloatingActionButton(onClick = { navController.navigate(TheYumExplorerScreen.UPLOAD_CONTENT_SCREEN.name) }) {
-                        Icon(Icons.Rounded.Add, contentDescription = null)
-                    }
-                })
-            NavigationBarItem(
-                selected = false,
+            NavigationBarItem(selected = false, onClick = { /*TODO*/ }, icon = {
+                FloatingActionButton(onClick = { navController.navigate(TheYumExplorerScreen.UPLOAD_CONTENT_SCREEN.name) }) {
+                    Icon(Icons.Rounded.Add, contentDescription = null)
+                }
+            })
+            NavigationBarItem(selected = false,
                 onClick = { /*TODO*/ },
                 icon = { Icon(Icons.Rounded.Map, contentDescription = null) })
             NavigationBarItem(
@@ -64,7 +55,15 @@ fun MainScreen(modifier: Modifier, navController: NavController) {
         when (route) {
             TheYumExplorerScreen.EXPLORER_SCREEN -> ExplorerScreen(
                 modifier = modifier.padding(it),
-                navController
+                navController,
+                {
+                    route = it
+                },
+            )
+
+            TheYumExplorerScreen.RECIPE_SCREEN -> RecipeScreen(
+                modifier = modifier.padding(it),
+                navController = navController
             )
 
             else -> ProfileScreen(modifier.padding(it), navController)

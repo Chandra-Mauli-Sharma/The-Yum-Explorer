@@ -1,4 +1,4 @@
-package com.example.theyumexplorer.view
+package com.example.theyumexplorer.view.screen
 
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts

@@ -30,7 +30,7 @@ class SignupRepositoryImpl @Inject constructor(
     }
 
     override suspend fun SaveUserToDb(user: User) {
-        db.collection(TheYumCollections.USER.name).add(user).await()
+        db.collection(TheYumCollections.USER.name).document(user.uid!!).set(user).await()
     }
 
     override suspend fun CreateGoogleAccount(idtoken: String): User {

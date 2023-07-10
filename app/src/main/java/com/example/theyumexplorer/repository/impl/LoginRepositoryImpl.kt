@@ -13,26 +13,32 @@ import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 import javax.inject.Singleton
 
+
 @Singleton
 class LoginRepositoryImpl @Inject constructor(
-    val context: Context,
-    val auth: FirebaseAuth,
-    val db: FirebaseFirestore
+    val context: Context, val auth: FirebaseAuth, val db: FirebaseFirestore
 ) : LoginRepository {
     override suspend fun SignInWithEmailAndPassword(email: String, password: String): User? {
         val userList = db.collection(TheYumCollections.USER.name).get().await().query.whereEqualTo(
-            "email",
-            email
+            "email", email
         ).get().await().toObjects<User>()
-        return if (userList.isNotEmpty())
-            auth.signInWithEmailAndPassword(email, password)
-                .await().user.toTheYumUser()
+        return if (userList.isNotEmpty()) auth.signInWithEmailAndPassword(email, password)
+            .await().user.toTheYumUser()
         else null
     }
 
-    override suspend fun SigninGoogleAccount(idtoken: String) =
-        auth.signInWithCredential(GoogleAuthProvider.getCredential(idtoken, null))
+    override suspend fun SigninGoogleAccount(idtoken: String): User {
+        val user = auth.signInWithCredential(GoogleAuthProvider.getCredential(idtoken, null))
             .await().user.toTheYumUser()
+        SaveUserToDb(user)
+        return user
+    }
+
+    override suspend fun SaveUserToDb(user: User) {
+        db.collection(TheYumCollections.USER.name).document(user.uid!!).set(user).await()
+    }
 
     override suspend fun LoginAnonymous() = auth.signInAnonymously().await().user.toTheYumUser()
 }
+
+

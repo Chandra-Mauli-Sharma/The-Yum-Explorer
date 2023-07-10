@@ -7,4 +7,5 @@ interface LoginRepository {
     suspend fun LoginAnonymous(): User
     suspend fun SigninGoogleAccount(idtoken: String): User
     suspend fun SignInWithEmailAndPassword(email: String, password: String): User?
+    suspend fun SaveUserToDb(user: User)
 }

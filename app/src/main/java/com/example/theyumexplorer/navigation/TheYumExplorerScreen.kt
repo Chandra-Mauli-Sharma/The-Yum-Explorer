@@ -7,5 +7,6 @@ enum class TheYumExplorerScreen {
     MAIN_SCREEN,
     UPLOAD_CONTENT_SCREEN,
     IMAGE_CAPTURE_SCREEN,
-    SIGNUP_SCREEN
+    SIGNUP_SCREEN,
+    RECIPE_SCREEN
 }

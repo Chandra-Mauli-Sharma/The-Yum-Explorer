@@ -1,4 +1,4 @@
-package com.example.theyumexplorer.view
+package com.example.theyumexplorer.view.screen
 
 import android.Manifest
 import android.content.ContentValues
@@ -62,12 +62,10 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.util.Consumer
 import androidx.navigation.NavController
-import com.example.theyumexplorer.util.writeString
+import com.example.theyumexplorer.util.TheYumContent
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import java.io.File
 import java.util.Locale
 import java.util.concurrent.Executor
@@ -87,7 +85,7 @@ fun ContentCaptureScreen(
         mutableStateOf<Uri?>(null)
     }
     val cameraProviderFuture = remember { ProcessCameraProvider.getInstance(context) }
-    val cameraPermissionState = rememberPermissionState(android.Manifest.permission.CAMERA)
+    val cameraPermissionState = rememberPermissionState(Manifest.permission.CAMERA)
     val micPermissionState = rememberPermissionState(permission = Manifest.permission.RECORD_AUDIO)
     var imageCapture by remember {
         mutableStateOf<ImageCapture?>(null)
@@ -140,12 +138,6 @@ fun ContentCaptureScreen(
                                 }
                                 IconButton(
                                     onClick = {
-//                                        coroutine.launch(Dispatchers.IO) {
-//                                            context.writeString(
-//                                                "upload-image-uri",
-//                                                currentCapturedImage.toString()
-//                                            )
-//                                        }
                                         navController.previousBackStackEntry?.savedStateHandle?.set(
                                             "upload-image-uri",
                                             currentCapturedImage.toString()
@@ -181,7 +173,7 @@ fun ContentCaptureScreen(
                                 .requireLensFacing(CameraSelector.LENS_FACING_BACK)
                                 .build()
 
-                            if (contentType == "Image") {
+                            if (contentType == TheYumContent.Image.name) {
                                 imageCapture = ImageCapture.Builder().build()
                                 cameraProvider.unbindAll()
                                 cameraProvider.bindToLifecycle(
@@ -196,7 +188,6 @@ fun ContentCaptureScreen(
                                     .build()
                                 val videoCapture = VideoCapture.withOutput(recorder)
 
-                                // Create MediaStoreOutputOptions for our recorder
                                 val name = "CameraX-recording-" +
                                         SimpleDateFormat("ddMMyyyy", Locale.US)
                                             .format(System.currentTimeMillis()) + ".mp4"
@@ -244,7 +235,6 @@ fun ContentCaptureScreen(
                                         .prepareRecording(context, mediaStoreOutput)
                                         .withAudioEnabled()
                                         .start(executor!!, recordingListener)
-
                                 } else {
                                     micPermissionState.launchPermissionRequest()
                                 }
@@ -271,20 +261,21 @@ fun ContentCaptureScreen(
                 )
                 IconButton(
                     onClick = {
-                        val outputFileOptions =
-                            ImageCapture.OutputFileOptions.Builder(File(context.externalCacheDir!!.path + File.separator + System.currentTimeMillis() + ".png"))
-                                .build()
-                        imageCapture?.takePicture(outputFileOptions, executor!!,
-                            object : ImageCapture.OnImageSavedCallback {
-                                override fun onError(error: ImageCaptureException) {
-                                    Log.d("Hey", error.toString())
-                                }
+                        if (contentType == TheYumContent.Image.name) {
+                            val outputFileOptions =
+                                ImageCapture.OutputFileOptions.Builder(File(context.externalCacheDir!!.path + File.separator + System.currentTimeMillis() + ".png"))
+                                    .build()
+                            imageCapture?.takePicture(outputFileOptions, executor!!,
+                                object : ImageCapture.OnImageSavedCallback {
+                                    override fun onError(error: ImageCaptureException) {
+                                        Log.d("Hey", error.toString())
+                                    }
 
-                                override fun onImageSaved(outputFileResults: ImageCapture.OutputFileResults) {
-                                    currentCapturedImage = outputFileResults.savedUri
-                                }
-                            })
-
+                                    override fun onImageSaved(outputFileResults: ImageCapture.OutputFileResults) {
+                                        currentCapturedImage = outputFileResults.savedUri
+                                    }
+                                })
+                        }
                     },
                     colors = IconButtonDefaults.filledIconButtonColors(
                         containerColor = MaterialTheme.colorScheme.primaryContainer,

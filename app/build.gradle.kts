@@ -1,3 +1,5 @@
+import java.util.Properties
+
 @Suppress("DSL_SCOPE_VIOLATION") // TODO: Remove once KTIJ-19369 is fixed
 plugins {
     alias(libs.plugins.androidApplication)
@@ -22,6 +24,11 @@ android {
         vectorDrawables {
             useSupportLibrary = true
         }
+
+        val properties = Properties()
+        properties.load(project.rootProject.file("local.properties").inputStream())
+        buildConfigField("String", "app_id", properties["app_id"].toString())
+        buildConfigField("String", "app_key", properties["app_key"].toString())
     }
 
     buildTypes {
@@ -42,6 +49,7 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
     composeOptions {
         kotlinCompilerExtensionVersion = "1.4.3"
@@ -71,6 +79,7 @@ dependencies {
     implementation(libs.coil.compose)
     implementation(libs.firebase.storage.ktx)
     implementation(libs.play.services.auth)
+    implementation(libs.kotlin.reflect)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.test.ext.junit)
     androidTestImplementation(libs.espresso.core)
@@ -111,6 +120,11 @@ dependencies {
     implementation(libs.accompanist.placeholder.material)
 
     implementation(libs.androidx.work.runtime.ktx)
+    implementation(libs.retrofit)
+    implementation(libs.gson)
+    implementation(libs.logging.interceptor)
+    implementation(libs.converter.gson)
+
 }
 
 // Allow references to generated code

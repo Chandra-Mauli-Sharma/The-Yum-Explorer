@@ -1,21 +1,18 @@
 package com.example.theyumexplorer.navigation
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import com.example.theyumexplorer.util.readBool
-import com.example.theyumexplorer.view.ContentCaptureScreen
-import com.example.theyumexplorer.view.ExplorerScreen
-import com.example.theyumexplorer.view.LoginScreen
-import com.example.theyumexplorer.view.MainScreen
-import com.example.theyumexplorer.view.ProfileScreen
-import com.example.theyumexplorer.view.SignupScreen
-import com.example.theyumexplorer.view.UploadContentScreen
+import com.example.theyumexplorer.view.screen.ContentCaptureScreen
+import com.example.theyumexplorer.view.screen.ExplorerScreen
+import com.example.theyumexplorer.view.screen.LoginScreen
+import com.example.theyumexplorer.view.screen.MainScreen
+import com.example.theyumexplorer.view.screen.ProfileScreen
+import com.example.theyumexplorer.view.screen.RecipeScreen
+import com.example.theyumexplorer.view.screen.SignupScreen
+import com.example.theyumexplorer.view.screen.UploadContentScreen
 
 @Composable
 fun TheYumExplorerNavHost(
@@ -35,13 +32,16 @@ fun TheYumExplorerNavHost(
                 MainScreen(modifier = modifier, navHostController)
             }
             composable(TheYumExplorerScreen.EXPLORER_SCREEN.name) {
-                ExplorerScreen(modifier = modifier, navHostController)
+                ExplorerScreen(modifier = modifier, navHostController, {})
             }
             composable(TheYumExplorerScreen.PROFILE_SCREEN.name) {
                 ProfileScreen(modifier = modifier, navHostController)
             }
             composable(TheYumExplorerScreen.UPLOAD_CONTENT_SCREEN.name) {
                 UploadContentScreen(modifier = modifier, navHostController)
+            }
+            composable(TheYumExplorerScreen.RECIPE_SCREEN.name) {
+                RecipeScreen(modifier = modifier, navHostController)
             }
             composable("${TheYumExplorerScreen.IMAGE_CAPTURE_SCREEN.name}/{contentType}") {
                 ContentCaptureScreen(
